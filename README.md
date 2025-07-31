@@ -18,24 +18,24 @@ This MCP server integrates with the TCGdex API to provide comprehensive Pokemon 
 ## Available Tools
 
 ### Card Operations
-- `get_card_by_id(card_id)` - Retrieve a specific card by its ID
-- `get_card_by_query(query)` - Search cards using advanced TCGdx Query syntax
+- `get_card_by_id(card_id)` - Get detailed information about a specific card
+- `get_card_by_query(query)` - Search for cards using natural language or specific criteria
 
 ### Set & Series Operations
-- `get_set_by_id(set_id)` - Get detailed set information
-- `get_serie_by_id(serie_id)` - Get detailed series information
-- `get_available_sets()` - List all available sets
-- `get_available_series()` - List all available series
+- `get_set_by_id(set_id)` - Get complete information about a card set
+- `get_serie_by_id(serie_id)` - Get details about a card series
+- `get_available_sets()` - Browse all available Pokemon TCG sets
+- `get_available_series()` - View all Pokemon TCG series
 
 ### Metadata Operations
-- `get_available_types()` - Get all Pokemon types
-- `get_available_rarities()` - Get all card rarities
-- `get_available_stages()` - Get all Pokemon stages
-- `get_available_trainerTypes()` - Get all trainer types
-- `get_available_energyTypes()` - Get all energy types
-- `get_available_regulationMarks()` - Get all regulation marks
-- `get_available_categories()` - Get all card categories
-- `get_available_illustrators()` - Get all card illustrators
+- `get_available_types()` - List all Pokemon types (Fire, Water, etc.)
+- `get_available_rarities()` - Show all card rarities (Common, Rare, etc.)
+- `get_available_stages()` - Display Pokemon evolution stages
+- `get_available_trainerTypes()` - List trainer card categories
+- `get_available_energyTypes()` - Show energy card types
+- `get_available_regulationMarks()` - View tournament regulation marks
+- `get_available_categories()` - List card categories (Pokemon, Trainer, Energy)
+- `get_available_illustrators()` - Browse card artists and illustrators
 
 ## Project Structure
 
@@ -67,7 +67,7 @@ pokemon_tcg_mcp/
 
 2. **Clone the repository**:
    ```powershell
-   git clone <repository-url>
+   git clone https://github.com/delfoxav/pokemon_tcg_mcp
    cd pokemon_tcg_mcp
    ```
 
@@ -80,7 +80,7 @@ pokemon_tcg_mcp/
 
 1. **Clone the repository**:
    ```powershell
-   git clone <repository-url>
+   git clone https://github.com/delfoxav/pokemon_tcg_mcp
    cd pokemon_tcg_mcp
    ```
 
@@ -132,37 +132,53 @@ Add the following configuration to your MCP client settings (e.g., `mcp.json`):
 
 Replace `C:\\path\\to\\pokemon_tcg_mcp` with the actual path to your project directory.
 
-## Query Syntax
+## Usage Examples with LLMs
 
-The `get_card_by_query` tool uses TCGdx Query syntax for advanced card searching:
+Once the MCP server is configured with your AI assistant, you can ask natural language questions about Pokemon TCG cards:
 
-### Basic Query Methods
-- `equal(field, value)` - Exact match
-- `contains(field, value)` - Substring match
-- `sort(field, order)` - Sort results ('asc' or 'desc')
-- `paginate(page, itemsPerPage)` - Limit results
-- `notEqual(field, value)` - Not equal to value
-- `greaterThan(field, value)` - Greater than value
-- `lessThan(field, value)` - Less than value
-- `isNull(field)` - Field is null
-- `notNull(field)` - Field is not null
+### Card Search Examples
 
-### Example Queries
+**"Find all Charizard cards"**
+The AI will use the `get_card_by_query` tool to search for cards containing "Charizard" in the name and return detailed information about each card including stats, abilities, and images.
 
-**Find all Fire-type Rare cards from Base Set:**
-```python
-Query().equal("series.name", "Base Set").equal("type", "Fire").equal("rarity", "Rare")
-```
+**"Show me rare Fire-type Pokemon from the Base Set"**
+The AI will search for cards matching these criteria and display comprehensive details about each card.
 
-**Find Pokemon with abilities from regulation mark D:**
-```python
-Query().equal("category", "Pokemon").equal("regulationMark", "D").notNull("ability")
-```
+**"What are all the available Pokemon types?"**
+The AI will call `get_available_types()` and list all Pokemon types like Fire, Water, Grass, etc.
 
-**Find cards containing "Pikachu" sorted by name:**
-```python
-Query().contains("name", "Pikachu").sort("name", "asc")
-```
+### Set and Series Information
+
+**"Tell me about the Base Set"**
+The AI will use `get_set_by_id()` to retrieve detailed information about the Base Set including release date, card count, and all cards in the set.
+
+**"What Pokemon sets are available?"**
+The AI will call `get_available_sets()` and provide a comprehensive list of all available sets with their logos and basic information.
+
+### Card Details
+
+**"Get details for card swsh1-25"**
+The AI will use `get_card_by_id()` to fetch complete information about the specific card including:
+- Card image
+- Stats (HP, attacks, abilities)
+- Rarity and set information
+- Artist and illustrator details
+
+### Advanced Queries
+
+**"Find all Pokemon with abilities from the latest regulation"**
+The AI will construct appropriate queries to find Pokemon cards that have abilities from recent regulation marks.
+
+**"Show me all trainer cards from Team Rocket series"**
+The AI will search for trainer-type cards from the specified series and display their effects and artwork.
+
+### Metadata Exploration
+
+**"What rarities are available for Pokemon cards?"**
+The AI will call `get_available_rarities()` and list all possible card rarities.
+
+**"Show me all available illustrators"**
+The AI will use `get_available_illustrators()` to display a list of all card artists and illustrators.
 
 ## API Reference
 
