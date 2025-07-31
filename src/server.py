@@ -19,6 +19,9 @@ import os
 language = os.getenv("TCGDX_LANGUAGE", "en")
 
 sdk = TCGdex(language)
+image_quality = os.getenv("TCGDX_IMAGE_QUALITY", "low")
+image_type = os.getenv("TCGDX_IMAGE_FORMAT", "png")
+
 
 # initialize FastMCP server
 mcp = FastMCP("Pokemon TCG MCP Server")
@@ -58,7 +61,7 @@ async def get_available_sets() -> list[dict[str, Any]]:
         logging.warning("No sets found.")
         return []
     else:
-        return [tools.SetResume_to_dict(set) for set in sets]
+        return [tools.SetResume_to_dict(set, image_quality, image_type) for set in sets]
 
 @mcp.tool()
 async def get_available_trainerTypes() -> list[str]:
@@ -136,7 +139,7 @@ async def get_card_by_id(card_ids: list[str]) -> list[dict]:
     """
     try:
         cards = await asyncio.gather(*(sdk.card.get(cid) for cid in card_ids), return_exceptions=True)
-        return [tools.Card_to_dict(card) for card in cards if card]
+        return [tools.Card_to_dict(card, image_quality, image_type) for card in cards if card]
     except Exception as e:
         logging.error(f"Error fetching cards with IDs {card_ids}: {e}")
         return []
@@ -153,7 +156,7 @@ async def get_set_by_id(set_ids: list[str]) -> list[dict]:
     try:
         sets = await asyncio.gather(*(sdk.set.getSync(set_id) for set_id in set_ids), return_exceptions=True)
         logging.info(f"Fetched sets with IDs {set_ids}")
-        return [tools.SetResume_to_dict(set) for set in sets if set]
+        return [tools.SetResume_to_dict(set, image_quality, image_type) for set in sets if set]
     except Exception as e:
         logging.error(f"Error fetching sets with IDs {set_ids}: {e}")
         return []
@@ -171,7 +174,7 @@ async def get_serie_by_id(serie_ids: list[str]) -> list[dict]:
     try:
         series = await asyncio.gather(*(sdk.serie.getSync(serie_id) for serie_id in serie_ids), return_exceptions=True)
         logging.info(f"Fetched series with IDs {serie_ids}")
-        return [tools.Serie_to_dict(serie) for serie in series if serie]
+        return [tools.Serie_to_dict(serie, image_quality, image_type) for serie in series if serie]
     except Exception as e:
         logging.error(f"Error fetching series with IDs {serie_ids}: {e}")
         return []   
@@ -229,7 +232,7 @@ async def get_card_by_query(query:str) -> list[dict]:
     # get the corresponding card objects
     cards = await asyncio.gather(*(sdk.card.get(card_id) for card_id in cards_ids), return_exceptions=True)
 
-    return [tools.Card_to_dict(card) for card in cards if card]
+    return [tools.Card_to_dict(card, image_quality, image_type) for card in cards if card]
 
 
 

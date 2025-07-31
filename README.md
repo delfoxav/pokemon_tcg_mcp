@@ -121,7 +121,9 @@ Add the following configuration to your MCP client settings (e.g., `mcp.json`):
       "command": "uv",
       "args": ["--directory", "C:\\path\\to\\pokemon_tcg_mcp\\src", "run", "server.py"],
       "env": {
-        "TCGDX_LANGUAGE": "en" 
+        "TCGDX_LANGUAGE": "en",
+        "TCGDX_IMAGE_QUALITY": "low",
+        "TCGDX_IMAGE_FORMAT": "png"
       }
     }
   }

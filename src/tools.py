@@ -4,20 +4,18 @@ from tcgdexsdk import Card, Set, Serie, SerieResume, SetResume, CardResume
 from tcgdexsdk.models.subs import CardAttack, CardAbility, Legal
 
 
-image_quality ="low"
-image_type = "png"
 
 
-def Serie_to_dict(serie: Serie) -> dict:
+def Serie_to_dict(serie: Serie, image_quality: str = "low", image_type: str = "png") -> dict:
     """ Converts a Serie object to a dictionary. """
     return {
         'id': serie.id,
         'name': serie.name,
         'logo': serie.logo + "/" + image_quality + "." + image_type if serie.logo else None,
-        'sets': [SetResume_to_dict(set) for set in serie.sets] if serie.sets else None,
+        'sets': [SetResume_to_dict(s, image_quality, image_type) for s in serie.sets] if serie.sets else None,
     }
 
-def Set_to_dict(set: Set) -> dict:
+def Set_to_dict(set: Set, image_quality: str = "low", image_type: str = "png") -> dict:
     """ Converts a Set object to a dictionary. """
     
     return {
@@ -31,8 +29,8 @@ def Set_to_dict(set: Set) -> dict:
         'legalities': Legal_to_str(set.legalities),
         'cards': [CardResume_to_dict(card) for card in set.cards] if set.cards else None,
     }
-    
-def CardResume_to_dict(card_resume: CardResume) -> dict:
+
+def CardResume_to_dict(card_resume: CardResume, image_quality: str = "low", image_type: str = "png") -> dict:
     """ Converts a CardResume object to a dictionary. """
     return {
         'id': card_resume.id,
@@ -41,7 +39,7 @@ def CardResume_to_dict(card_resume: CardResume) -> dict:
         'image': card_resume.image +"/" + image_quality + "." + image_type if card_resume.image else None,
     }
 
-def SetResume_to_dict(set_resume: SetResume) -> dict:
+def SetResume_to_dict(set_resume: SetResume, image_quality: str = "low", image_type: str = "png") -> dict:
     """ Converts a SetResume object to a dictionary. """
     return {
         'id': set_resume.id,
@@ -84,7 +82,7 @@ def Legal_to_str(legal: Legal) -> str:
     legal_list = [k for k, v in potential_legal.items() if v is not False]
     return ", ".join(legal_list) if legal_list else None
 
-def Card_to_dict(card: Card) -> dict:
+def Card_to_dict(card: Card, image_quality: str = "low", image_type: str = "png") -> dict:
     """ Converts a Card object to a dictionary. """
     potential_variants = card.variants.__dict__
     # filter out the False values
