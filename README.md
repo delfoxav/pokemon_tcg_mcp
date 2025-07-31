@@ -119,12 +119,10 @@ Add the following configuration to your MCP client settings (e.g., `mcp.json`):
   "servers": {
     "pokemontcg": {
       "command": "uv",
-      "args": [
-        "--directory",
-        "C:\\path\\to\\pokemon_tcg_mcp\\src",
-        "run",
-        "server.py"
-      ]
+      "args": ["--directory", "C:\\path\\to\\pokemon_tcg_mcp\\src", "run", "server.py"],
+      "env": {
+        "TCGDX_LANGUAGE": "en" 
+      }
     }
   }
 }

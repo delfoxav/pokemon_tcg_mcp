@@ -15,8 +15,10 @@ import asyncio
 import tools
 from tcgdexsdk import Query
 
+import os
+language = os.getenv("TCGDX_LANGUAGE", "en")
 
-sdk = TCGdex("en")
+sdk = TCGdex(language)
 
 # initialize FastMCP server
 mcp = FastMCP("Pokemon TCG MCP Server")
