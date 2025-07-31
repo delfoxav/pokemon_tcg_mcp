@@ -7,6 +7,5 @@ requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.1",
     "mcp[cli]>=1.12.2",
-    "pokemontcgsdk>=3.4.0",
     "tcgdex-sdk>=2.2.0",
 ]
