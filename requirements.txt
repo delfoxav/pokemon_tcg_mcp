@@ -1,0 +1,20 @@
+# Basic requirements for Pokemon TCG MCP Server
+
+# MCP SDK
+mcp
+
+# HTTP client
+httpx
+
+# Data validation
+pydantic
+
+# Environment variables
+python-dotenv
+
+# Development dependencies (optional)
+# pytest
+# pytest-asyncio
+# black
+# mypy
+# flake8
