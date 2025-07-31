@@ -202,7 +202,6 @@ source = { virtual = "." }
 dependencies = [
     { name = "httpx" },
     { name = "mcp", extra = ["cli"] },
-    { name = "pokemontcgsdk" },
     { name = "tcgdex-sdk" },
 ]
 
@@ -210,7 +209,6 @@ dependencies = [
 requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.12.2" },
-    { name = "pokemontcgsdk", specifier = ">=3.4.0" },
     { name = "tcgdex-sdk", specifier = ">=2.2.0" },
 ]
 
@@ -221,18 +219,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
-]
-
-[[package]]
-name = "pokemontcgsdk"
-version = "3.4.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "dacite" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0f/0b/0830c8274aee7cbb2468bd6c174e0d470878ee7654d88cb8f831fa8e18ea/pokemontcgsdk-3.4.0.tar.gz", hash = "sha256:5ebc6a0f5fae14535ef30ab39d6dd55ae0d88b1cdb85bc02ad883900fc1d5551", size = 8461, upload-time = "2021-12-21T23:57:18.095Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c7/04/a65b091b27434908a0dff317021b45dc08e8133bf635940c53e2936501cb/pokemontcgsdk-3.4.0-py3-none-any.whl", hash = "sha256:50508e6964ce76909d9def3ed5d72eb5a3ba9effb60186d50ec29d3e53dda56c", size = 13744, upload-time = "2021-12-21T23:57:16.889Z" },
 ]
 
 [[package]]

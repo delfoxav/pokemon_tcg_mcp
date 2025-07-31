@@ -23,14 +23,24 @@ mcp = FastMCP("Pokemon TCG MCP Server")
 
 
 @mcp.tool()
-def get_available_types() -> list[str]:
+async def get_available_types() -> list[str]:
     """ Returns a list of all available Pokémon types. """
-    return sdk.type.listSync()
+    types = await sdk.type.list()
+    if not types:
+        logging.warning("No types found.")
+        return []
+    else:
+        return types
 
 @mcp.tool()
-def get_available_rarities() -> list[str]:
+async def get_available_rarities() -> list[str]:
     """ Returns a list of all available Cards rarities. """
-    return sdk.rarity.listSync()
+    rarities = await sdk.rarity.list()
+    if not rarities:
+        logging.warning("No rarities found.")
+        return []
+    else:
+        return rarities
 
 @mcp.tool()
 async def get_available_series() -> list[dict[str, Any]]:
@@ -39,110 +49,134 @@ async def get_available_series() -> list[dict[str, Any]]:
     return [tools.SerieResume_to_dict(serie) for serie in await sdk.serie.list()]
 
 @mcp.tool()
-def get_available_sets() -> list[dict[str, Any]]:
+async def get_available_sets() -> list[dict[str, Any]]:
     """ Returns a list of all available Cards sets. """
-
-    return [tools.SetResume_to_dict(set) for set in sdk.set.listSync()]
-
+    sets = await sdk.set.list()
+    if not sets:
+        logging.warning("No sets found.")
+        return []
+    else:
+        return [tools.SetResume_to_dict(set) for set in sets]
 
 @mcp.tool()
-def get_available_trainerTypes() -> list[str]:
+async def get_available_trainerTypes() -> list[str]:
     """ Returns a list of all available Trainer types. """
-    return sdk.trainerType.listSync()
+    trainer_types = await sdk.trainerType.list()
+    if not trainer_types:
+        logging.warning("No trainer types found.")
+        return []
+    else:
+        return trainer_types
 
 @mcp.tool()
-def get_available_energyTypes() -> list[str]:
+async def get_available_energyTypes() -> list[str]:
     """ Returns a list of all available Energy types. """
-    return sdk.energyType.listSync()
+    energy_types = await sdk.energyType.list()
+    if not energy_types:
+        logging.warning("No energy types found.")
+        return []
+    else:
+        return energy_types
 
 @mcp.tool()
-def get_available_stages() -> list[str]:
+async def get_available_stages() -> list[str]:
     """ Returns a list of all available Pokémon stages. """
-    return sdk.stage.listSync()
+    stages = await sdk.stage.list()
+    if not stages:
+        logging.warning("No stages found.")
+        return []
+    else:
+        return stages
 
 @mcp.tool()
-def get_available_regulationMarks() -> list[str]:
+async def get_available_regulationMarks() -> list[str]:
     """ Returns a list of all available Regulation Marks. """
-    return sdk.regulationMark.listSync()
+
+    regulation_marks = await sdk.regulationMark.list()
+    if not regulation_marks:
+        logging.warning("No regulation marks found.")
+        return []
+    else:
+        return regulation_marks
 
 @mcp.tool()
-def get_available_categories() -> list[str]:
+async def get_available_categories() -> list[str]:
     """ Returns a list of all available Card categories. """
-    return sdk.category.listSync()
-
+    
+    categories = await sdk.category.list()
+    if not categories:
+        logging.warning("No categories found.")
+        return []
+    else:
+        return categories
+    
 @mcp.tool()
-def get_available_illustrators() -> list[str]:
+async def get_available_illustrators() -> list[str]:
     """ Returns a list of all available Card illustrators. """
-    return sdk.illustrator.listSync()
+    
+    illustrators = await sdk.illustrator.list()
+    if not illustrators:
+        logging.warning("No illustrators found.")
+        return []
+    else:
+        return illustrators
+    
 
 @mcp.tool()
-def get_card_by_id(card_id: str) -> dict:
+async def get_card_by_id(card_ids: list[str]) -> list[dict]:
     """
     Returns a card or list of cards from their id.
     
     Args:
-        card_id (str): The ID of the card to fetch. 
+        card_ids (list[str]): The ID of the card to fetch.
     Returns:
-        Card: The card object retrieved from the API.
+        list[Card]: The card object(s) retrieved from the API.
     """
-    # Check if card_id is a list, if so prepare all the fetches
     try:
-        card = sdk.card.getSync(card_id)
-        logging.info(f"Fetched card with ID {card_id}")
-        if not card:
-            logging.warning(f"No card found with ID {card_id}")
-            return None
-        return tools.Card_to_dict(card)
+        cards = await asyncio.gather(*(sdk.card.get(cid) for cid in card_ids), return_exceptions=True)
+        return [tools.Card_to_dict(card) for card in cards if card]
     except Exception as e:
-        logging.error(f"Error fetching card with ID {card_id}: {e}")
-        return None
-
+        logging.error(f"Error fetching cards with IDs {card_ids}: {e}")
+        return []
 @mcp.tool()
-def get_set_by_id(set_id: str) -> dict:
+async def get_set_by_id(set_ids: list[str]) -> list[dict]:
     """
-    Returns a set from its id.
+    Returns a list of sets from their id.
     
     Args:
-        set_id (str): The ID of the set to fetch.
+        set_ids (list[str]): The IDs of the sets to fetch.
     Returns:
-        Set: The set object retrieved from the API.
+        list[Set]: The set objects retrieved from the API.
     """
     try:
-        set = sdk.set.getSync(set_id)
-        logging.info(f"Fetched set with ID {set_id}")
-        if not set:
-            logging.warning(f"No set found with ID {set_id}")
-            return None
-        return tools.SetResume_to_dict(set)
+        sets = await asyncio.gather(*(sdk.set.getSync(set_id) for set_id in set_ids), return_exceptions=True)
+        logging.info(f"Fetched sets with IDs {set_ids}")
+        return [tools.SetResume_to_dict(set) for set in sets if set]
     except Exception as e:
-        logging.error(f"Error fetching set with ID {set_id}: {e}")
-     
-        return None
-
-@mcp.tool()
-def get_serie_by_id(serie_id: str) -> dict:
-    """
-    Returns a serie from its id.
+        logging.error(f"Error fetching sets with IDs {set_ids}: {e}")
+        return []
     
+
+@mcp.tool()
+async def get_serie_by_id(serie_ids: list[str]) -> list[dict]:
+    """
+    Returns a list of series from their id.
     Args:
-        serie_id (str): The ID of the serie to fetch.
+        serie_ids (list[str]): The IDs of the series to fetch.
     Returns:
-        Serie: The serie object retrieved from the API.
+        list[Serie]: The serie objects retrieved from the API.
     """
     try:
-        serie = sdk.serie.getSync(serie_id)
-        logging.info(f"Fetched serie with ID {serie_id}")
-        if not serie:
-            logging.warning(f"No serie found with ID {serie_id}")
-            return None
-        return tools.Serie_to_dict(serie)
+        series = await asyncio.gather(*(sdk.serie.getSync(serie_id) for serie_id in serie_ids), return_exceptions=True)
+        logging.info(f"Fetched series with IDs {serie_ids}")
+        return [tools.Serie_to_dict(serie) for serie in series if serie]
     except Exception as e:
-        logging.error(f"Error fetching serie with ID {serie_id}: {e}")
-        return None
+        logging.error(f"Error fetching series with IDs {serie_ids}: {e}")
+        return []   
 
 
 @mcp.tool()
-def get_card_by_query(query:str) -> list[dict]:
+async def get_card_by_query(query:str) -> list[dict]:
     """
     Returns a list of cards based on a query.
     
@@ -181,13 +215,20 @@ def get_card_by_query(query:str) -> list[dict]:
     Returns:
         list[Card]: A list of card objects matching the query.
     """
-    
-    results = sdk.card.listSync(eval(query))
-    if not results:
+
+    cards = await sdk.card.list(eval(query))
+    if not cards:
         logging.warning("No cards found for the given query.")
         return []
-    else:
-        return [tools.Card_to_dict(sdk.card.getSync(card.id)) for card in results]
+    
+    # collect the ids of the cards
+    cards_ids = [tools.CardResume_to_dict(card).get("id") for card in cards]
+    
+    # get the corresponding card objects
+    cards = await asyncio.gather(*(sdk.card.get(card_id) for card_id in cards_ids), return_exceptions=True)
+
+    return [tools.Card_to_dict(card) for card in cards if card]
+
 
 
 if __name__ == "__main__":
