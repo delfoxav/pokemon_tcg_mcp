@@ -189,7 +189,6 @@ This server uses the [TCGdex API](https://tcgdex.dev/) which provides comprehens
 - **mcp[cli]** (>=1.12.2) - Model Context Protocol framework
 - **httpx** (>=0.28.1) - HTTP client for API requests
 - **tcgdex-sdk** (>=2.2.0) - TCGdex API SDK
-- **pokemontcgsdk** (>=3.4.0) - Pokemon TCG API SDK
 
 ## Contributing
 
