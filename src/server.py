@@ -13,6 +13,7 @@ import time
 import asyncio
 
 import tools
+import justTCG
 from tcgdexsdk import Query
 
 import os
@@ -140,6 +141,7 @@ async def get_card_by_id(card_ids: list[str]) -> list[dict]:
     except Exception as e:
         logging.error(f"Error fetching cards with IDs {card_ids}: {e}")
         return []
+
 @mcp.tool()
 async def get_set_by_id(set_ids: list[str]) -> list[dict]:
     """
@@ -158,7 +160,6 @@ async def get_set_by_id(set_ids: list[str]) -> list[dict]:
         logging.error(f"Error fetching sets with IDs {set_ids}: {e}")
         return []
     
-
 @mcp.tool()
 async def get_serie_by_id(serie_ids: list[str]) -> list[dict]:
     """
@@ -175,7 +176,6 @@ async def get_serie_by_id(serie_ids: list[str]) -> list[dict]:
     except Exception as e:
         logging.error(f"Error fetching series with IDs {serie_ids}: {e}")
         return []   
-
 
 @mcp.tool()
 async def get_card_by_query(query:str) -> list[dict]:
@@ -232,7 +232,161 @@ async def get_card_by_query(query:str) -> list[dict]:
     return [tools.Card_to_dict(card) for card in cards if card]
 
 
+if os.getenv("JUSTTCG_API_KEY"):
 
+    @mcp.tool()
+    def get_games_JustTCG() -> list[dict]:
+        """
+        
+        JustTCG is an api that provides access to trading card stores for various games.
+        Using this tool, you can access the list of games available in JustTCG.
+        
+        Returns a list of games available in JustTCG. With general information such as:
+        - id: The unique identifier for the game.
+        - name: The name of the game.
+        - card_count: The total number of cards available in the game.
+        - sets_count: The total number of sets available in the game.
+        - game_id: The unique identifier for the game in the JustTCG API.
+        
+        Returns:
+            list[dict]: A list of games with their details.
+        """
+        return justTCG.get_list_of_games()
+
+    @mcp.tool()
+    def get_sets_JustTCG(game: str) -> list[dict]:
+        """
+        JustTCG is an api that provides access to trading card stores for various games.
+        Using this tool, you can access the list of sets available in JustTCG for a specific game.
+
+        Returns a list of sets for a specific game. With general information such as:
+        - id: The unique identifier for the set.
+        - name: The name of the set.
+        - game_id: The unique identifier for the game in the JustTCG API.
+        - game: The name of the game.
+        - card_count: The total number of cards available in the set.
+        
+        Args:
+            game (str): The game id to fetch sets for.
+            
+        Returns:
+            list[dict]: A list of sets with their details.
+        """
+        return justTCG.get_list_of_sets(game)
+
+    @mcp.tool()
+    def get_cards_by_query_JustTCG(
+        tcgplayerId: str = None,
+        cardId: str = None,
+        variantId: str = None,
+        condition: str = None,
+        game: str = None,
+        set: str = None,
+        order_by: str = None,
+        order_direction: str = None,
+        limit: int = 20,
+        offset: int = 0,
+        search_query: str = None
+    ) -> list[dict]:
+        """
+        JustTCG is an api that provides access to trading card stores for various games.
+        Using this tool, you can find specific cards based on various parameters.
+        
+        
+        Returns a list of cards based on a query.
+        Note: The tcgplayerId, cardId or variantId will take precedence over any search query if any of those are provided.
+        
+        Avoid using multiple identifiers in the same object.
+        variantId will take precedence over tcgplayerId and tcgplayerId will take precedence over cardId.
+
+        Args:
+            tcgplayerId (str, optional): The TCGPlayer ID of the card.
+            cardId (str, optional): The ID of the card.
+            variantId (str, optional): The variant ID of the card.
+            condition (str, optional): valid conditions are [Sealed, Near Mint, Lightly Played, Moderately Played, Heavily Played, Damaged] or abreviations [S, NM, LP, MP, HP, D].
+            game (str, optional): The name of the game to filter cards by.
+            set (str, optional): The name of the set to filter cards by.
+            order_by (str, optional): The field to order the results by.
+            order_direction (str, optional): The direction to order the results (asc or desc).
+            limit (int, optional): The number of results to return per page. Default is 20.
+            offset (int, optional): Number of results to skip. Default is 0.
+            search_query (str, optional): A search query string to filter cards by name or other attributes. A search query looks like this:
+            
+        Returns:
+            list[dict]: A list of cards matching the query.
+            
+            A card object will contain the following fields:
+            - id: The unique identifier for the card.
+            - name: The name of the card.
+            - game: The name of the game the card belongs to.
+            - set: The name of the set the card belongs to.
+            - number: The card number in the set.
+            - tcgplayerId: The TCGPlayer ID of the card.
+            - rarity: The rarity of the card.
+            - details: additional card specific details.
+            - variants: an array of variants objects.
+            
+            A variant object will contain the following fields:
+            - id: The unique identifier for the variant.
+            - condition: The condition of the variant (e.g., Near Mint, Lightly Played).
+            - printing: The printing type (e.g, "Normal", "Foil")
+            - price: the current price of the variant in USD.
+            - lastUpdated: The date and time when the variant was last updated Unix timestamp in seconds.
+            - priceChange24hr: The percentage change in price over the last 24 hours.
+            - priceChange7d: The percentage change in price over the last 7 days.
+            - avgPrice: The average price over the default time period.
+            - priceHistory (list[dict]): A list of price history objects, each containing:
+                - t: The date of the price record in Unix timestamp format.
+                - p: The price of the card at the given date.
+            - minPrice7d: The minimum price of the variant over the last 7 days.
+            - maxPrice7d: The maximum price of the variant over the last 7 days.
+            - stddevPopPrice7d: The population standard deviation of the price over the last 7 days.
+            - covPrice7d: The coefficient of variation of the price over the last 7 days.
+            - iqrPrice7d: The interquartile range of the price over the last 7 days.
+            - trendSlope7d: The slope of the price trend over the last 7 days.
+            - priceChangesCount7d: The number of price changes over the last 7 days.
+            - priceChange30d: The percentage change in price over the last 30 days.
+            - avgPrice30d: The average price over the last 30 days.
+            - minPrice30d: The minimum price of the variant over the last 30 days.
+            - maxPrice30d: The maximum price of the variant over the last 30 days.
+            - priceHistory30d (list[dict]): A list of price history objects for the last 30 days, each containing:
+                - t: The date of the price record in Unix timestamp format.
+                - p: The price of the card at the given date.
+            - stddevPopPrice30d: The population standard deviation of the price over the last 30 days.
+            - covPrice30d: The coefficient of variation of the price over the last 30 days.
+            - iqrPrice30d: The interquartile range of the price over the last 30 days.
+            - trendSlope30d: The slope of the price trend over the last 30 days
+            - priceChangesCount30d: The number of price changes over the last 30 days.
+            - priceRelativeTo30dRange: The current price relative to the 30-day range,(0 to 1).
+            - minPrice90d: The minimum price of the variant over the last 90 days.
+            - maxPrice90d: The maximum price of the variant over the last 90 days.
+            - minPrice1y: The minimum price of the variant over the last year.
+            - maxPrice1y: The maximum price of the variant over the last year.
+            - minPriceAllTime: The minimum price of the variant since it was added to the database.
+            - maxPriceAllTime: The maximum price of the variant since it was added to the database.
+            - minPriceAllTimeDate: The date of the minimum price of the variant since it was added to the database in ISO 8601 date.
+            - maxPriceAllTimeDate: The date of the maximum price of the variant since it was added to the database in ISO 8601 date.
+        """
+        results = justTCG.get_cards_by_query(
+            tcgplayerId=tcgplayerId,
+            cardId=cardId,
+            variantId=variantId,
+            condition=condition,
+            game=game,
+            set=set,
+            order_by=order_by,
+            order_direction=order_direction,
+            limit=limit,
+            offset=offset,
+            search_query=search_query
+        )
+        
+        if not results:
+            logging.warning("No cards found for the given query.")
+            return []
+        else:
+            return results
+        
 if __name__ == "__main__":
     
     mcp.run(transport='stdio')
